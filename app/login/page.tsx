@@ -210,12 +210,13 @@ export default function Page() {
         setErrorVisible(false);
         const phone = phoneRef.current?.value || "";
 
-        const res = await fetch('/api/verify-otp', {
+
+
+        const res = await fetch('/api/auth/verify-otp', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ phone, otp: code })
         });
-
         const data = await res.json();
         if (!data.success) {
             setErrorVisible(true);

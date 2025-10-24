@@ -1,9 +1,7 @@
 'use client';
-
 import { ReactNode, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-
-const jwt_decode = require('jwt-decode');
+import * as jwt_decode from 'jwt-decode';
 
 interface DecodedToken {
   id: number;
@@ -12,13 +10,12 @@ interface DecodedToken {
   iat: number;
 }
 
-interface ProtectedLayoutProps {
+interface DashboardLayoutProps {
   children: ReactNode;
 }
 
-export default function ProtectedLayout({ children }: ProtectedLayoutProps) {
+export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const router = useRouter();
-  const [role, setRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -29,10 +26,13 @@ export default function ProtectedLayout({ children }: ProtectedLayoutProps) {
     }
 
     try {
-      const decoded: DecodedToken = jwt_decode(token);
-      setRole(decoded.role);
-    } catch (err) {
-      console.error('Invalid token', err);
+      const decoded = (jwt_decode as any)(token) as DecodedToken;
+      // فقط بررسی می‌کنیم که token معتبر باشد
+      if (!decoded || (decoded.role !== 'customer' && decoded.role !== 'admin')) {
+        router.push('/login');
+      }
+    } catch {
+      localStorage.removeItem('token');
       router.push('/login');
     } finally {
       setLoading(false);

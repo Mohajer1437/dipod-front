@@ -1,7 +1,7 @@
 'use client';
 import { ReactNode, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import * as jwtDecode from 'jwt-decode';
+import * as jwt_decode from 'jwt-decode';
 
 interface DecodedToken {
   id: number;
@@ -26,11 +26,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     }
 
     try {
-      const decoded = (jwtDecode as unknown as (token: string) => { id: number; username: string; role: 'admin' | 'customer' })(token);
+      const decoded = (jwt_decode as any)(token) as DecodedToken;
       if (decoded.role !== 'admin') {
-        router.push('/dashboard');
+        router.push('/dashboard'); // فقط کاربران admin اجازه دارند
       }
     } catch {
+      localStorage.removeItem('token');
       router.push('/login');
     } finally {
       setLoading(false);
