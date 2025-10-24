@@ -108,23 +108,35 @@ export default function Page() {
     };
 
     // send OTP button clicked
-    const handleSendOtp = () => {
+    const handleSendOtp = async () => {
         setErrorVisible(false);
         const pv = phoneRef.current?.value?.trim() || "";
         if (!validPhone(pv)) return;
+
+        // call server
+        const res = await fetch('/api/auth/send-otp', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phone: pv })
+        });
+        const data = await res.json();
+        if (!data.success) {
+            alert(data.error || 'خطا در ارسال OTP');
+            return;
+        }
+
+
         setMaskedPhone(maskPhone(pv));
         setStep("otp");
+
         // clear previous otp inputs
-        otpRefs.current.forEach((i) => {
-            if (i) i.value = "";
-        });
+        otpRefs.current.forEach((i) => { if (i) i.value = ""; });
         setOtpValue("");
-        // focus first digit after short delay
         setTimeout(() => otpRefs.current[0]?.focus(), 50);
-        // start 90s timer
         setLeftSeconds(90);
         setResendEnabled(false);
     };
+
 
     const handleChangePhone = () => {
         setStep("phone");
@@ -193,23 +205,31 @@ export default function Page() {
         setTimeout(() => otpRefs.current[0]?.focus(), 50);
     };
 
-    const handleVerify = () => {
+    const handleVerify = async () => {
         const code = otpRefs.current.map((i) => (i?.value || "")).join("");
         setErrorVisible(false);
-        // demo: accept 123456 only
-        if (code === "123456") {
-            alert("ورود/ثبت‌نام موفق بود! (نسخهٔ نمایشی)");
-            // in real: exchange code -> token, then route
-            router.push("/dashboard");
-        } else {
+        const phone = phoneRef.current?.value || "";
+
+        const res = await fetch('/api/verify-otp', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phone, otp: code })
+        });
+
+        const data = await res.json();
+        if (!data.success) {
             setErrorVisible(true);
-            otpRefs.current.forEach((i) => {
-                if (i) i.value = "";
-            });
+            otpRefs.current.forEach((i) => { if (i) i.value = ""; });
             setOtpValue("");
             setTimeout(() => otpRefs.current[0]?.focus(), 50);
+            return;
         }
+
+        // ذخیره توکن و ریدایرکت
+        localStorage.setItem('token', data.token);
+        router.push("/dashboard");
     };
+
 
     // phone Enter to send
     const onPhoneKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {

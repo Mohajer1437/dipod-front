@@ -1,0 +1,20 @@
+{
+  "users": [
+    {
+      "id": 1761328831263,
+      "phone": "09336967660",
+      "otp": null,
+      "role": "customer"
+    }
+  ],
+  "posts": [
+    {
+      "id": 1,
+      "slug": "hello-world",
+      "title": "Hello World",
+      "content": "محتوای متنی",
+      "image": "",
+      "createdAt": "2025-10-24T20:00:00Z"
+    }
+  ]
+}
