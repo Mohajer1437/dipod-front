@@ -28,3 +28,20 @@ body {
 *{
   font-family: vazir;
 }
+
+/* 🟣 راست‌چین کامل ادیتور Quill */
+.ql-container {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+.ql-editor {
+  direction: rtl !important;
+  text-align: right !important;
+  line-height: 1.8 !important;
+}
+
+.ql-toolbar {
+  direction: rtl !important;
+  text-align: right !important;
+}

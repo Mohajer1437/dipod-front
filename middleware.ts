@@ -1,25 +1,35 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
-import jwt from 'jsonwebtoken';
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { jwtVerify } from "jose"; // 👈 کتابخانه‌ی امن و سازگار با Edge
 
-export function middleware(req: NextRequest) {
+const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
+
+export async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
 
-  if (path.startsWith('/admin')) {
-    const token = req.cookies.get('token')?.value;
+  // فقط مسیرهای admin بررسی بشن
+  if (path.startsWith("/admin")) {
+    const token = req.cookies.get("token")?.value;
 
     if (!token) {
-      return NextResponse.redirect(new URL('/', req.url));
+      console.warn("[middleware] ❌ No token — redirecting to /login");
+      return NextResponse.redirect(new URL("/login", req.url));
     }
 
     try {
-      const payload: any = jwt.verify(token, process.env.JWT_SECRET!);
+      const { payload }: any = await jwtVerify(token, secret);
+      console.log("[middleware] ✅ Token payload:", payload);
 
-      if (payload.role !== 'admin') {
-        return NextResponse.redirect(new URL('/', req.url));
+      if (payload.role !== "admin") {
+        console.warn("[middleware] ⚠️ Non-admin role:", payload.role);
+        return NextResponse.redirect(new URL("/", req.url));
       }
-    } catch {
-      return NextResponse.redirect(new URL('/', req.url));
+
+      // اجازه بده ادامه بده
+      return NextResponse.next();
+    } catch (err) {
+      console.error("[middleware] ❌ Token invalid or expired:", err);
+      return NextResponse.redirect(new URL("/login", req.url));
     }
   }
 
@@ -27,5 +37,5 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*'],
+  matcher: ["/admin/:path*"],
 };

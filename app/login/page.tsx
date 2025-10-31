@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Head from "next/head";
 import { useEffect, useRef, useState } from "react";
@@ -159,23 +159,27 @@ export default function Page() {
         const code = otpRefs.current.map((i) => i?.value || "").join("");
         if (!validPhone(phone) || code.length !== 6) return;
 
+        console.log("🚀 در حال ارسال درخواست verify-otp...");
         const res = await fetch("/api/auth/verify-otp", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ phone, otp: code }),
+            credentials: "include", // 👈 این خط مهم‌ترین تغییر است
         });
+
         const data = await res.json();
-        if (data.success && data.token) {
-            const decoded = jwtDecode<TokenPayload>(data.token);
-            if (decoded.role === "admin") {
-                router.push("/admin");
-            } else {
-                router.push("/");
-            }
+        console.log("📦 پاسخ سرور:", data);
+
+        if (data.success) {
+            console.log("🍪 کوکی HttpOnly توسط سرور تنظیم شد — بدون نیاز به localStorage");
+            // فقط بر اساس نقش کاربر از پاسخ JWT در سرور هدایت کن
+            // چون ما نقش رو تو فرانت نداریم، مسیر ریدایرکت رو عمومی بگیر
+            router.replace("/admin");
         } else {
             setErrorVisible(true);
         }
     };
+
 
     return (
         <>

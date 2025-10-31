@@ -1,44 +1,35 @@
-'use client';
-import { ReactNode, useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import * as jwt_decode from 'jwt-decode';
+import { ReactNode } from "react";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import jwt from "jsonwebtoken";
+import AdminLayoutClient from "./_layout-client";
 
-interface DecodedToken {
-  id: number;
-  role: 'admin' | 'customer';
-  exp: number;
-  iat: number;
+interface TokenPayload {
+  userId: number;
+  phone: string;
+  role: string;
 }
 
-interface AdminLayoutProps {
-  children: ReactNode;
-}
+export default async function AdminLayout({ children }: { children: ReactNode }) {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
 
-export default function AdminLayout({ children }: AdminLayoutProps) {
-  const router = useRouter();
-  const [loading, setLoading] = useState(true);
+  if (!token) {
+    console.warn("[AdminLayout] ❌ Token not found — redirecting to /login");
+    redirect("/login");
+  }
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      router.push('/login');
-      return;
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as TokenPayload;
+    if (decoded.role !== "admin") {
+      console.warn("[AdminLayout] ⚠️ Non-admin role detected:", decoded.role);
+      redirect("/");
     }
+  } catch (err) {
+    console.error("[AdminLayout] ❌ Token verification failed:", err);
+    redirect("/login");
+  }
 
-    try {
-      const decoded = (jwt_decode as any)(token) as DecodedToken;
-      if (decoded.role !== 'admin') {
-        router.push('/dashboard'); // فقط کاربران admin اجازه دارند
-      }
-    } catch {
-      localStorage.removeItem('token');
-      router.push('/login');
-    } finally {
-      setLoading(false);
-    }
-  }, [router]);
-
-  if (loading) return <div>در حال بررسی دسترسی...</div>;
-
-  return <>{children}</>;
+  // ✅ render client layout
+  return <AdminLayoutClient>{children}</AdminLayoutClient>;
 }
