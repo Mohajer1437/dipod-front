@@ -62,75 +62,6 @@ export default function BlogPage() {
             "radial-gradient(1200px 800px at 90% -10%, rgba(130,77,238,0.14), transparent 60%), radial-gradient(900px 600px at -10% 10%, rgba(53,27,103,0.15), transparent 60%), #0b0b12",
         }}
       >
-        {/* Header */}
-        <header className="sticky top-0 z-60 backdrop-blur-md backdrop-saturate-150 bg-[linear-gradient(180deg,rgba(11,11,18,0.85),rgba(11,11,18,0.65))] border-b border-[rgba(255,255,255,0.06)]">
-          <div className="max-w-[1200px] mx-auto px-5">
-            <div className="flex items-center justify-between gap-4 min-h-[72px]">
-              <a href="#" className="flex items-center gap-3" aria-label="Dipad Home">
-                <span
-                  className="w-9 h-9 rounded-[12px] shadow-[0_6px_18px_rgba(130,77,238,0.45)]"
-                  style={{ background: "conic-gradient(from 210deg at 50% 50%, #824dee, #351b67)" }}
-                  aria-hidden
-                />
-                <h1 className="text-lg m-0 flex items-center gap-2">
-                  دیپاد <span className="text-[12px] font-bold rounded-full px-2 py-1" style={{ background: "linear-gradient(135deg,#6ef2d6,#21e1b8)", color: "#0c1b17" }}>وبلاگ</span>
-                </h1>
-              </a>
-
-              <nav aria-label="Primary" className="hidden md:block">
-                <ul className="flex gap-4 list-none m-0 p-0">
-                  <li><a className="text-[#e6e9ff] px-3 py-2 rounded-lg text-sm hover:bg-[rgba(255,255,255,0.06)]" href="/">خانه</a></li>
-                  <li><a className="text-[#e6e9ff] px-3 py-2 rounded-lg text-sm hover:bg-[rgba(255,255,255,0.06)]" href="/features">ویژگی‌ها</a></li>
-                  <li><a className="text-[#e6e9ff] px-3 py-2 rounded-lg text-sm hover:bg-[rgba(255,255,255,0.06)]" href="/pricing">قیمت‌ها</a></li>
-                  <li><a className="text-[#e6e9ff] px-3 py-2 rounded-lg text-sm hover:bg-[rgba(255,255,255,0.06)]" href="/contact">تماس</a></li>
-                </ul>
-              </nav>
-
-              <div className="flex items-center gap-3">
-                <a className="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-full border border-[rgba(255,255,255,0.14)] text-sm" href="/">بازگشت به سایت</a>
-                <a className="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-[linear-gradient(135deg,#824dee,#351b67)] text-white text-sm" href="#newsletter">عضویت خبرنامه</a>
-
-                {/* hamburger */}
-                <button id="openMenu" aria-label="باز کردن منو" className="md:hidden grid place-items-center w-11 h-11 rounded-lg border border-[rgba(255,255,255,0.12)]">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M4 7h16M4 12h16M4 17h16" stroke="#e8e8ff" strokeWidth="2" strokeLinecap="round" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-        </header>
-
-        {/* Mobile sheet (dialog) */}
-        <dialog
-          ref={sheetRef}
-          id="sheet"
-          className="md:hidden"
-          style={{
-            border: "none",
-            padding: 0,
-            width: "min(92vw,420px)",
-            background: "#121222",
-            color: "#f5f7ff",
-            borderRadius: 20,
-            boxShadow: "0 10px 30px rgba(0,0,0,0.25)",
-          }}
-        >
-          <div className="flex items-center justify-between p-4 border-b" style={{ borderColor: "rgba(255,255,255,0.08)" }}>
-            <strong>منو</strong>
-            <button id="closeMenu" aria-label="بستن" className="p-2">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
-                <path d="M6 6l12 12M18 6l-12 12" stroke="#e8e8ff" strokeWidth="2" strokeLinecap="round" />
-              </svg>
-            </button>
-          </div>
-          <nav className="p-4">
-            <a className="block w-full text-center mb-3 px-3 py-2 rounded-lg border border-[rgba(255,255,255,0.12)]" href="/">خانه</a>
-            <a className="block w-full text-center mb-3 px-3 py-2 rounded-lg border border-[rgba(255,255,255,0.12)]" href="/features">ویژگی‌ها</a>
-            <a className="block w-full text-center mb-3 px-3 py-2 rounded-lg border border-[rgba(255,255,255,0.12)]" href="/pricing">قیمت‌ها</a>
-            <a className="block w-full text-center px-3 py-2 rounded-lg bg-[linear-gradient(135deg,#824dee,#351b67)] text-white" href="/contact">تماس</a>
-          </nav>
-        </dialog>
 
         {/* Page head */}
         <div className="max-w-[1200px] mx-auto px-5 pt-7 pb-4">
@@ -308,55 +239,6 @@ export default function BlogPage() {
               </div>
             </aside>
           </div>
-
-          {/* Footer */}
-          <footer className="mt-8 border-t border-[rgba(255,255,255,0.08)] pt-8">
-            <div className="flex flex-col lg:flex-row lg:justify-between gap-6">
-              <div className="flex gap-3 items-start">
-                <span
-                  className="w-11 h-11 rounded-[12px] shadow-[0_6px_18px_rgba(130,77,238,0.45)]"
-                  style={{ background: "conic-gradient(from 210deg at 50% 50%, #824dee, #351b67)" }}
-                  aria-hidden
-                />
-                <div>
-                  <strong className="block">دیپاد</strong>
-                  <div className="text-sm text-[#9aa0b6] mt-1">وبلاگ دیپاد — تازه‌های آرشیو آفلاین</div>
-                  <p className="text-sm text-[#9aa0b6] mt-3 max-w-[56ch]">تمامی مقالات آموزشی بوده و جایگزین مشاوره تخصصی نیستند. برای پروژه‌های سازمانی با ما تماس بگیرید.</p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-6">
-                <div>
-                  <h6 className="mb-2">صفحات</h6>
-                  <ul className="list-none m-0 p-0 text-[#dfe4ff]">
-                    <li><a href="/features" className="hover:underline">ویژگی‌ها</a></li>
-                    <li><a href="/how-it-works" className="hover:underline">مراحل کار</a></li>
-                    <li><a href="/pricing" className="hover:underline">قیمت‌ها</a></li>
-                  </ul>
-                </div>
-
-                <div>
-                  <h6 className="mb-2">راهنماها</h6>
-                  <ul className="list-none m-0 p-0 text-[#dfe4ff]">
-                    <li><a href="#" className="hover:underline">شروع سریع</a></li>
-                    <li><a href="#" className="hover:underline">انتخاب رسانه</a></li>
-                    <li><a href="#" className="hover:underline">امنیت و کلیدها</a></li>
-                  </ul>
-                </div>
-
-                <div>
-                  <h6 className="mb-2">تماس</h6>
-                  <ul className="list-none m-0 p-0 text-[#dfe4ff]">
-                    <li className="ltr">blog@dipad.example</li>
-                    <li className="ltr">+98-21-XXXXXXX</li>
-                    <li>تهران / خدمات سازمانی</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-6 text-sm text-[#9aa0b6]">© 2025 Dipad — Blog.</div>
-          </footer>
         </main>
       </div>
     </>

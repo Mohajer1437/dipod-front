@@ -19,14 +19,25 @@ body {
 
 
 @font-face {
-  font-family: "vazir";
+  font-family: "dana";
   src:
-    local("vazir"),
-    url("../public/fonts/Vazir-Medium-FD-WOL.woff") format("woff");
+    local("dana"),
+    url("../public/fonts/Dana-Regular.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
 }
 
-*{
-  font-family: vazir;
+@font-face {
+  font-family: "dana";
+  src:
+    local("dana Bold"),
+    url("../public/fonts/Dana-Bold.woff") format("woff");
+  font-weight: bold;
+  font-style: normal;
+}
+
+* {
+  font-family: dana;
 }
 
 /* 🟣 راست‌چین کامل ادیتور Quill */

@@ -1,14 +1,6 @@
 'use client';
 import { ReactNode, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import * as jwt_decode from 'jwt-decode';
-
-interface DecodedToken {
-  id: number;
-  role: 'admin' | 'customer';
-  exp: number;
-  iat: number;
-}
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -17,29 +9,44 @@ interface DashboardLayoutProps {
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const [userRole, setUserRole] = useState<string | null>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      router.push('/login');
-      return;
-    }
+    (async () => {
+      try {
+        const res = await fetch('/api/auth/me', { credentials: 'include' });
+        const data = await res.json();
 
-    try {
-      const decoded = (jwt_decode as any)(token) as DecodedToken;
-      // فقط بررسی می‌کنیم که token معتبر باشد
-      if (!decoded || (decoded.role !== 'customer' && decoded.role !== 'admin')) {
-        router.push('/login');
+        if (!data.authenticated || !data.user) {
+          router.replace('/login');
+          return;
+        }
+
+        if (!['admin', 'customer'].includes(data.user.role)) {
+          router.replace('/login');
+          return;
+        }
+
+        setUserRole(data.user.role);
+      } catch {
+        router.replace('/login');
+      } finally {
+        setLoading(false);
       }
-    } catch {
-      localStorage.removeItem('token');
-      router.push('/login');
-    } finally {
-      setLoading(false);
-    }
+    })();
   }, [router]);
 
-  if (loading) return <div>در حال بررسی دسترسی...</div>;
+  if (loading) return <div className="p-5 text-center">در حال بررسی دسترسی...</div>;
 
-  return <>{children}</>;
+  return (
+    <div
+      className="min-h-screen text-white"
+      style={{
+        background:
+          'radial-gradient(1200px 800px at 90% -10%, rgba(130,77,238,.14), transparent 60%), radial-gradient(900px 600px at -10% 10%, rgba(53,27,103,.15), transparent 60%), #0b0b12',
+      }}
+    >
+      <main className="p-6">{children}</main>
+    </div>
+  );
 }

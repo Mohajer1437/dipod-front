@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import ContactForm from '@/components/contact-form';
 
 export default function DipadPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -46,89 +47,6 @@ export default function DipadPage() {
     <div className="min-h-screen bg-[#0b0b12] text-[#f5f7ff] font-[Vazirmatn,sans-serif]" dir="rtl" style={{
       background: 'radial-gradient(1200px 800px at 90% -10%, rgba(130,77,238,.14), transparent 60%), radial-gradient(900px 600px at -10% 10%, rgba(53,27,103,.15), transparent 60%), #0b0b12'
     }}>
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-white/[0.06]" style={{
-        backdropFilter: 'saturate(140%) blur(8px)',
-        background: 'linear-gradient(180deg, rgba(11,11,18,.85), rgba(11,11,18,.65))'
-      }}>
-        <div className="max-w-[1200px] mx-auto px-5">
-          <nav className="flex items-center justify-between gap-4 min-h-[72px]">
-            {/* Brand */}
-            <a href="#top" onClick={(e) => handleSmoothScroll(e, '#top')} className="flex items-center gap-3">
-              <div className="w-[38px] h-[38px] rounded-xl shadow-[0_6px_18px_rgba(130,77,238,.45)]" style={{
-                background: 'conic-gradient(from 210deg at 50% 50%, #824dee, #351b67)'
-              }}></div>
-              <h1 className="text-xl font-semibold m-0">
-                دیپاد <span className="inline-flex items-center gap-1 text-[#0c1b17] bg-gradient-to-br from-[#6ef2d6] to-[#21e1b8] px-2 py-1 rounded-full text-xs font-bold">آفلاین اما مثل ابر</span>
-              </h1>
-            </a>
-
-            {/* Desktop Nav */}
-            <ul className="hidden md:flex gap-4 list-none m-0 p-0">
-              {[
-                { href: '#features', label: 'ویژگی‌ها' },
-                { href: '#how', label: 'چطور کار می‌کند؟' },
-                { href: '#compare', label: 'مقایسه' },
-                { href: '#pricing', label: 'قیمت‌ها' },
-                { href: '#faq', label: 'سوالات متداول' }
-              ].map(item => (
-                <li key={item.href}>
-                  <a href={item.href} onClick={(e) => handleSmoothScroll(e, item.href)} className="text-[#e6e9ff] px-3 py-2 rounded-lg text-[0.95rem] opacity-90 hover:bg-white/[0.06] transition-colors">
-                    {item.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-
-            {/* CTA Buttons */}
-            <div className="flex gap-2">
-              <a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className="hidden sm:inline-flex items-center gap-2 bg-transparent text-white px-5 py-3 rounded-full border border-white/[0.14] transition-all hover:-translate-y-0.5">
-                مشاوره رایگان
-              </a>
-              <a href="#cta" onClick={(e) => handleSmoothScroll(e, '#cta')} className="inline-flex items-center gap-2 bg-gradient-to-br from-[#824dee] to-[#351b67] text-white px-5 py-3 rounded-full border border-white/[0.08] shadow-[0_8px_24px_rgba(130,77,238,.35)] transition-all hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(130,77,238,.45)]">
-                شروع کنید
-              </a>
-              <button onClick={() => setMobileMenuOpen(true)} className="md:hidden grid place-items-center w-11 h-11 rounded-xl border border-white/[0.12]">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                  <path d="M4 7h16M4 12h16M4 17h16" stroke="#e8e8ff" strokeWidth="2" strokeLinecap="round"/>
-                </svg>
-              </button>
-            </div>
-          </nav>
-        </div>
-      </header>
-
-      {/* Mobile Menu Dialog */}
-      {mobileMenuOpen && (
-        <div className="fixed inset-0 z-[100] bg-black/50 flex items-start justify-center pt-20" onClick={() => setMobileMenuOpen(false)}>
-          <div className="bg-[#121222] rounded-3xl w-[min(92vw,420px)] shadow-[0_10px_30px_rgba(0,0,0,.25)]" onClick={(e) => e.stopPropagation()}>
-            <div className="flex justify-between items-center px-5 py-4 border-b border-white/[0.08]">
-              <strong>منو</strong>
-              <button onClick={() => setMobileMenuOpen(false)} className="p-2">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                  <path d="M6 6l12 12M18 6l-12 12" stroke="#e8e8ff" strokeWidth="2" strokeLinecap="round"/>
-                </svg>
-              </button>
-            </div>
-            <nav className="p-5">
-              {[
-                { href: '#features', label: 'ویژگی‌ها' },
-                { href: '#how', label: 'چطور کار می‌کند؟' },
-                { href: '#compare', label: 'مقایسه' },
-                { href: '#pricing', label: 'قیمت‌ها' },
-                { href: '#faq', label: 'سوالات متداول' }
-              ].map(item => (
-                <a key={item.href} href={item.href} onClick={(e) => handleSmoothScroll(e, item.href)} className="block my-3 bg-transparent text-white px-5 py-3 rounded-full border border-white/[0.14] text-center">
-                  {item.label}
-                </a>
-              ))}
-              <a href="#cta" onClick={(e) => handleSmoothScroll(e, '#cta')} className="block mt-2 bg-gradient-to-br from-[#824dee] to-[#351b67] text-white px-5 py-3 rounded-full border border-white/[0.08] text-center">
-                شروع کنید
-              </a>
-            </nav>
-          </div>
-        </div>
-      )}
 
       {/* Hero */}
       <main id="top" className="relative overflow-hidden">
@@ -409,84 +327,12 @@ export default function DipadPage() {
       <section id="contact" className="py-15">
         <div className="max-w-[1200px] mx-auto px-5">
           <div className="flex items-end justify-between gap-3 mb-7 flex-wrap">
-            <h3 className="m-0 text-[1.6rem] font-semibold">در تماس باشید</h3>
-            <span className="text-[#9aa0b6]">فرم نمونه (ارسال واقعی متصل نیست)</span>
-          </div>
-          <form onSubmit={(e) => { e.preventDefault(); alert('در نسخه نمونه، فرم به سرور متصل نیست.'); }} className="bg-gradient-to-b from-white/[0.04] to-white/[0.02] border border-white/[0.08] rounded-[18px] p-5">
-            <div className="grid sm:grid-cols-2 gap-3">
-              <div>
-                <label htmlFor="name" className="block mb-2">نام</label>
-                <input id="name" name="name" required placeholder="نام شما" className="w-full bg-[#0f0f1a] border border-white/[0.12] text-[#f5f7ff] rounded-xl p-3" />
-              </div>
-              <div>
-                <label htmlFor="phone" className="block mb-2">شماره تماس</label>
-                <input id="phone" name="phone" required placeholder="09xxxxxxxxx" className="w-full bg-[#0f0f1a] border border-white/[0.12] text-[#f5f7ff] rounded-xl p-3" />
-              </div>
-            </div>
-            <div className="mt-3">
-              <label htmlFor="msg" className="block mb-2">توضیحات</label>
-              <textarea id="msg" name="msg" rows={4} placeholder="نوع داده، حجم تقریبی، انتظارات بازیابی…" className="w-full bg-[#0f0f1a] border border-white/[0.12] text-[#f5f7ff] rounded-xl p-3"></textarea>
-            </div>
-            <div className="mt-4 flex flex-wrap gap-3 items-center">
-              <button type="submit" className="inline-flex items-center gap-2 bg-gradient-to-br from-[#824dee] to-[#351b67] text-white px-5 py-3 rounded-full border border-white/[0.08] shadow-[0_8px_24px_rgba(130,77,238,.35)] transition-all hover:-translate-y-0.5">
-                ارسال درخواست
-              </button>
-              <span className="text-[#9aa0b6]">یا با ما تماس بگیرید: <strong dir="ltr">+98-21-XXXXXXX</strong></span>
-            </div>
-          </form>
+            <h3 className="m-0 text-[1.6rem] font-semibold">در تماس باشید</h3>          </div>
+          <ContactForm />
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-white/[0.08] bg-black/20 py-7">
-        <div className="max-w-[1200px] mx-auto px-5">
-          <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-4 items-start mb-4">
-            <div>
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-[38px] h-[38px] rounded-xl" style={{
-                  background: 'conic-gradient(from 210deg at 50% 50%, #824dee, #351b67)'
-                }}></div>
-                <div>
-                  <strong>دیپاد</strong>
-                  <div className="text-[#9aa0b6] text-sm mt-1">ذخیره‌سازی آفلاین امن — مثل ابر، اما آفلاین</div>
-                </div>
-              </div>
-              <p className="text-[#9aa0b6] max-w-[56ch] m-0">
-                مالک ایده و کسب‌وکار: شرکت رایان پرداز سیستم نور ایرانیان — این نسخه یک دموی طراحی است و اطلاعات تماس نمونه می‌باشد.
-              </p>
-            </div>
-            <div className="grid sm:grid-cols-3 gap-4">
-              <div>
-                <h6 className="font-semibold mb-2">محصول</h6>
-                <ul className="list-none p-0 m-0 space-y-1 text-[#dfe4ff]">
-                  <li><a href="#features" onClick={(e) => handleSmoothScroll(e, '#features')} className="hover:text-white transition-colors">ویژگی‌ها</a></li>
-                  <li><a href="#how" onClick={(e) => handleSmoothScroll(e, '#how')} className="hover:text-white transition-colors">مراحل</a></li>
-                  <li><a href="#compare" onClick={(e) => handleSmoothScroll(e, '#compare')} className="hover:text-white transition-colors">مقایسه</a></li>
-                  <li><a href="#pricing" onClick={(e) => handleSmoothScroll(e, '#pricing')} className="hover:text-white transition-colors">قیمت‌ها</a></li>
-                </ul>
-              </div>
-              <div>
-                <h6 className="font-semibold mb-2">منابع</h6>
-                <ul className="list-none p-0 m-0 space-y-1 text-[#dfe4ff]">
-                  <li><a href="#faq" onClick={(e) => handleSmoothScroll(e, '#faq')} className="hover:text-white transition-colors">سوالات</a></li>
-                  <li><a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className="hover:text-white transition-colors">تماس</a></li>
-                  <li><a href="#" className="hover:text-white transition-colors">سیاست حفظ حریم خصوصی</a></li>
-                  <li><a href="#" className="hover:text-white transition-colors">شرایط استفاده</a></li>
-                </ul>
-              </div>
-              <div>
-                <h6 className="font-semibold mb-2">تماس</h6>
-                <ul className="list-none p-0 m-0 space-y-1 text-[#dfe4ff]">
-                  <li dir="ltr">info@dipad.example</li>
-                  <li dir="ltr">+98-21-XXXXXXX</li>
-                  <li>تهران / امکان ارائه خدمات سازمانی</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-          <div className="text-[#9aa0b6] text-sm">© 2025 Dipad — All rights reserved.</div>
-        </div>
-      </footer>
+      
     </div>
   );
 }

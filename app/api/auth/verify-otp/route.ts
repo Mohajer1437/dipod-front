@@ -3,39 +3,87 @@ import fs from "fs";
 import path from "path";
 import jwt from "jsonwebtoken";
 
-const DB_PATH = path.join(process.cwd(), "data", "db.json");
+// مسیر فایل users.json
+const USERS_FILE = path.join(process.cwd(), "data", "users.json");
 
-function readDb() {
-  if (!fs.existsSync(DB_PATH)) return { users: [] };
-  return JSON.parse(fs.readFileSync(DB_PATH, "utf-8"));
+// خواندن فایل
+function readUsers() {
+  try {
+    const raw = fs.readFileSync(USERS_FILE, "utf-8");
+    const parsed = JSON.parse(raw);
+    return parsed && Array.isArray(parsed.users) ? parsed : { users: [] };
+  } catch {
+    return { users: [] };
+  }
+}
+
+// نوشتن فایل
+function writeUsers(data: any) {
+  fs.writeFileSync(USERS_FILE, JSON.stringify(data, null, 2), "utf-8");
 }
 
 export async function POST(req: NextRequest) {
   try {
     const { phone, otp } = await req.json();
-    const db = readDb();
 
-    const user = db.users.find(
-      (u: any) => String(u.phone).trim() === String(phone).trim() && String(u.otp).trim() === String(otp).trim()
-    );
-
-    if (!user) {
-      return NextResponse.json({ success: false, error: "کد تایید نادرست است." }, { status: 400 });
+    if (!phone || !otp) {
+      return NextResponse.json(
+        { success: false, error: "شماره یا کد تأیید وارد نشده است." },
+        { status: 400 }
+      );
     }
 
-    // پاک کردن OTP بعد از تایید
-    user.otp = null;
-    fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2), "utf-8");
+    const db = readUsers();
+    const now = Date.now();
 
-    // ساخت JWT
+    // پیدا کردن کاربر
+    const user = db.users.find((u: any) => u.phone === phone);
+
+    if (!user || !user.otp) {
+      return NextResponse.json(
+        { success: false, error: "کاربری با این شماره یافت نشد یا کد منقضی است." },
+        { status: 404 }
+      );
+    }
+
+    // بررسی انقضا
+    if (user.otpExpiresAt && now > user.otpExpiresAt) {
+      // حذف OTP منقضی‌شده
+      user.otp = null;
+      user.otpExpiresAt = null;
+      writeUsers(db);
+      return NextResponse.json(
+        { success: false, error: "کد تأیید منقضی شده است. دوباره تلاش کنید." },
+        { status: 410 }
+      );
+    }
+
+    // بررسی تطابق OTP
+    if (String(user.otp).trim() !== String(otp).trim()) {
+      return NextResponse.json(
+        { success: false, error: "کد تأیید نادرست است." },
+        { status: 400 }
+      );
+    }
+
+    // حذف OTP بعد از تأیید موفق
+    user.otp = null;
+    user.otpExpiresAt = null;
+    writeUsers(db);
+
+    // ساخت JWT ایمن
     const token = jwt.sign(
-      { userId: user.id, phone: user.phone, role: user.role },
+      {
+        userId: user.id,
+        phone: user.phone,
+        role: user.role,
+      },
       process.env.JWT_SECRET!,
-      { expiresIn: "7d" }
+      { expiresIn: "7d" } // 7 روز
     );
 
-    // ساخت پاسخ و ست کردن کوکی HttpOnly
-    const res = NextResponse.json({ success: true });
+    // تنظیم کوکی HttpOnly امن
+    const res = NextResponse.json({ success: true, message: "ورود با موفقیت انجام شد." });
     res.cookies.set("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -44,11 +92,16 @@ export async function POST(req: NextRequest) {
       maxAge: 60 * 60 * 24 * 7, // 7 روز
     });
 
-    console.log(`[verify-otp] ✅ token created for ${user.phone} (${user.role})`);
+    if (process.env.NODE_ENV !== "production") {
+      console.log(`[verify-otp] ✅ ورود موفق برای ${user.phone} (${user.role})`);
+    }
 
     return res;
   } catch (err) {
     console.error("[verify-otp] Server error:", err);
-    return NextResponse.json({ success: false, error: "خطا در سرور." }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: "خطای داخلی سرور." },
+      { status: 500 }
+    );
   }
 }

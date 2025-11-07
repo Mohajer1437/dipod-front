@@ -1,49 +1,90 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import crypto from 'crypto';
 
-// مسیر دقیق db.json
-const DB_PATH = path.join(process.cwd(), 'data', 'db.json');
+// مسیر فایل users.json
+const USERS_FILE = path.join(process.cwd(), 'data', 'users.json');
 
-function readDb() {
-    if (!fs.existsSync(DB_PATH)) return { users: [] };
-    return JSON.parse(fs.readFileSync(DB_PATH, 'utf-8'));
+// توابع کمکی
+function readUsers() {
+  try {
+    const raw = fs.readFileSync(USERS_FILE, 'utf-8');
+    const parsed = JSON.parse(raw);
+    return parsed && Array.isArray(parsed.users) ? parsed : { users: [] };
+  } catch {
+    return { users: [] };
+  }
 }
 
-function writeDb(data: any) {
-    fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2), 'utf-8');
+function writeUsers(data: any) {
+  fs.writeFileSync(USERS_FILE, JSON.stringify(data, null, 2), 'utf-8');
 }
 
-export async function POST(req: NextRequest) {
-    try {
-        const body = await req.json();
-        const phone: string = body.phone;
+// تولید OTP امن‌تر (۶ رقم)
+function generateOtp() {
+  return ('' + crypto.randomInt(100000, 999999));
+}
 
-        if (!/^0?9\d{9}$/.test(phone)) {
-            return NextResponse.json({ error: 'شماره موبایل نامعتبر است.' }, { status: 400 });
-        }
+// حذف کاراکترهای ناخواسته از ورودی
+function sanitizePhone(phone: string) {
+  return phone.replace(/[^\d+]/g, '').trim();
+}
 
-        // OTP 6 رقمی تصادفی
-        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+// محدودیت زمانی ارسال دوباره (بر ثانیه)
+const RESEND_COOLDOWN = 60; // ۶۰ ثانیه
 
-        // خواندن دیتابیس
-        const db = readDb();
-        let user = db.users.find((u: any) => u.phone === phone);
-
-        if (!user) {
-            user = { id: Date.now(), phone, otp, role: 'customer' };
-            db.users.push(user);
-        } else {
-            user.otp = otp;
-        }
-
-        writeDb(db);
-
-        console.log(`OTP for ${phone}: ${otp}`);
-
-        return NextResponse.json({ success: true });
-    } catch (err) {
-        console.error(err);
-        return NextResponse.json({ error: 'خطا در سرور' }, { status: 500 });
+export async function POST(req: Request) {
+  try {
+    const body = await req.json();
+    let phone = body.phone;
+    if (!phone) {
+      return NextResponse.json({ error: 'شماره موبایل الزامی است' }, { status: 400 });
     }
+
+    phone = sanitizePhone(phone);
+    if (!/^(\+98|0)?9\d{9}$/.test(phone)) {
+      return NextResponse.json({ error: 'شماره موبایل معتبر نیست' }, { status: 400 });
+    }
+
+    const otp = generateOtp();
+    const now = Date.now();
+
+    const db = readUsers();
+    let user = db.users.find((u: any) => u.phone === phone);
+
+    // بررسی محدودیت ارسال مجدد
+    if (user && user.lastOtpAt && now - user.lastOtpAt < RESEND_COOLDOWN * 1000) {
+      const waitSec = Math.ceil((RESEND_COOLDOWN * 1000 - (now - user.lastOtpAt)) / 1000);
+      return NextResponse.json(
+        { error: `لطفاً ${waitSec} ثانیه دیگر مجدداً تلاش کنید.` },
+        { status: 429 } // Too Many Requests
+      );
+    }
+
+    // تنظیم اطلاعات کاربر
+    if (!user) {
+      user = { id: Date.now(), phone, role: 'customer' };
+      db.users.push(user);
+    }
+
+    user.otp = otp;
+    user.otpExpiresAt = now + 2 * 60 * 1000; // انقضا ۲ دقیقه
+    user.lastOtpAt = now;
+
+    writeUsers(db);
+
+    // در حالت واقعی: ارسال SMS از طریق سرویس
+    // await SMS.send_otp(phone, otp);
+
+    // در محیط توسعه می‌فرستیم فقط برای تست
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`✅ OTP [${phone}]: ${otp}`);
+    }
+
+    return NextResponse.json({ success: true, message: 'کد تأیید ارسال شد' });
+  } catch (err: any) {
+    console.error('OTP Error:', err);
+    return NextResponse.json({ error: 'خطای داخلی سرور' }, { status: 500 });
+  }
 }
